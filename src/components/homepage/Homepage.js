@@ -23,6 +23,7 @@ import {
   onValue,
   query,
   orderByValue,
+  get,
 } from "firebase/database";
 
 const useStyles = makeStyles(() => ({
@@ -49,10 +50,11 @@ const useStyles = makeStyles(() => ({
 
 function Homepage() {
   const classes = useStyles();
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [pending, setPending] = useState(true);
   const [cData, setcData] = useState(new Map());
   const [rrDataNames, setRrDataNames] = useState([]);
+  const [isOnline, setIsOnline] = useState(true);
 
   const { currentUser } = useContext(AuthContext);
   const cDataUserName = currentUser.displayName.split(" ")[0];
@@ -147,21 +149,25 @@ function Homepage() {
   const updateData = (key, data) => {
     console.log("Updating Item");
     console.log(data);
-    setOpenBackdrop(true);
-    const DB_PATH = `${getDbPath()}/${key}`;
-    const dataRef = firebase.database().ref(DB_PATH);
+    //setOpenBackdrop(true);
+    //const DB_PATH = `${getDbPath()}/${key}`;
+   /*  const dataRef = firebase.database().ref(DB_PATH);
     dataRef.update(data).then(() => {
       console.log(`Item ${key} has been updated`);
       setOpenBackdrop(false);
       setOpenSuccess(true);
       closeAdd();
-    });
+    }); */
+    let tempData = new Map (JSON.parse(localStorage.SvFsOffline))
+    tempData.set(key,data)
+    setcData(tempData)
+
   };
 
   const updateDataForm = (key) => () => {
     console.log("Updating item");
     console.log(key);
-    const itemData: Object = cData.get(key);
+    const itemData = cData.get(key);
     if (itemData == null) {
       throw new Error("Key not found");
     }
@@ -187,45 +193,33 @@ function Homepage() {
       data: "",
     });
   };
+
   const openAdd = () => {
     console.log("Opening Add");
     console.log(showAdd);
     setShowAdd(true);
   };
 
-  console.log("INIT");
-  useEffect(() => {
-    console.log("Something is happening");
-    console.log("Checking login");
-    console.log(dataUser);
-    //let DB_PATH = "control/Henry/2020/1";
-    //let DB_PATH = `control/${dataUser}/${dateState.year}/${dateState.month}`;
+  const getData = () => {
     let DB_PATH = getDbPath();
+    // let dataArray = [];
+    let dataRvNames = [];
+    let tempDataRvNames = {};
+    let dataMap = new Map();
     console.log(DB_PATH);
     //let DB_PATH = "control"
     // const stList = firebase.database().ref(DB_PATH);
     const db = getDatabase();
-    const connectedRef = ref(db, ".info/connected");
-    onValue(connectedRef, (snap) => {
-      if (snap.val() === true) {
-        console.log("connected");
-      } else {
-        console.log("not connected");
-      }
-    });
-    const stList = ref(getDatabase(), DB_PATH);
+    const stList = ref(db, DB_PATH);
     const stListQuery = query(stList, orderByValue("day"));
     console.log(stList);
     //stList.orderByValue().on("value", (snapshot) => {
     // stList.orderByChild("day").on("value", (snapshot) => {
     onValue(stListQuery, (snapshot) => {
       console.log("Data");
-      const dataArray = [];
-      const dataRvNames = [];
-      const tempDataRvNames = {};
-      let dataMap = new Map();
+      console.log(snapshot);
       snapshot.forEach((el) => {
-        dataArray.push(el);
+        // dataArray.push(el);
         console.log(el);
         console.log(el.key);
         //console.log(el.val());
@@ -238,11 +232,12 @@ function Homepage() {
         });
       });
       console.log(dataRvNames);
-      setData(dataArray);
+      // setData(dataArray);
       setcData(dataMap);
+      localStorage.SvFsOffline = JSON.stringify([...dataMap]);
       setPending(false);
       setRrDataNames(dataRvNames);
-      if (dataArray.length === 0) {
+      if (dataMap.size === 0) {
         console.log("No data");
         setNoData(true);
       } else {
@@ -250,6 +245,30 @@ function Homepage() {
         setNoData(false);
       }
     });
+  };
+
+  console.log("INIT");
+
+  useEffect(() => {
+    console.log("Something is happening");
+    console.log("Checking login");
+    console.log(dataUser);
+    //let DB_PATH = "control/Henry/2020/1";
+    //let DB_PATH = `control/${dataUser}/${dateState.year}/${dateState.month}`;
+    //let DB_PATH = "control"
+    // const stList = firebase.database().ref(DB_PATH);
+    const db = getDatabase();
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+      if (snap.val() === true) {
+        console.log("connected");
+        setIsOnline(true);
+      } else {
+        console.log("not connected");
+        setIsOnline(false);
+      }
+    });
+    getData();
   }, [dataUser, dateState, getDbPath]);
 
   return (
@@ -257,7 +276,7 @@ function Homepage() {
       <MenuAppBar />
       <UserContext.Provider
         value={{
-          data,
+          cData,
           rrDataNames,
           pending,
           setPending,
@@ -313,7 +332,7 @@ function Homepage() {
       <Backdrop
         className={classes.backdrop}
         open={openBackdrop}
-      //onClick={handleClose}
+        //onClick={handleClose}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

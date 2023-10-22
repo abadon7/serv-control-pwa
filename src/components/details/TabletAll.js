@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
 export default function TableAll() {
   const classes = useStyles();
 
-  const { pending, delData, updateDataForm, data, user } =
+  const { pending, delData, updateDataForm,  user, cData } =
     useContext(UserContext);
 
   const [totalData, setTotalData] = useState({ p: 0, v: 0, h: 0, r: 0, s: 0 });
@@ -124,17 +124,16 @@ export default function TableAll() {
     };
     const totalDataSum = (array) => {
       array.forEach((element) => {
-        totalDataObj.p += parseInt(element.val().pubs) || 0;
-        totalDataObj.v += parseInt(element.val().vid) || 0;
-        totalDataObj.h = sumHours(totalDataObj.h, element.val().horas);
-        totalDataObj.r += parseInt(element.val().rr) || 0;
-        totalDataObj.s += parseInt(element.val().est) || 0;
-      });
-      console.log(totalDataObj);
+        totalDataObj.p += parseInt(element.pubs) || 0;
+        totalDataObj.v += parseInt(element.vid) || 0;
+        totalDataObj.h = sumHours(totalDataObj.h, element.horas);
+        totalDataObj.r += parseInt(element.rr) || 0;
+        totalDataObj.s += parseInt(element.est) || 0;
+      });   console.log(totalDataObj);
       setTotalData(totalDataObj);
     };
-    totalDataSum(data);
-  }, [data]);
+    totalDataSum(cData);
+  }, [cData]);
 
   if (pending) {
     loading = (
@@ -168,10 +167,10 @@ export default function TableAll() {
           <TableHead>
             <TableRow>
               <TableCell align="center">REPORT</TableCell>
-              <TableCell align="center">{totalData.p}</TableCell>
-              <TableCell align="center">{totalData.v}</TableCell>
+             {/*  <TableCell align="center">{totalData.p}</TableCell>
+              <TableCell align="center">{totalData.v}</TableCell> */}
               <TableCell align="center">{totalData.h}</TableCell>
-              <TableCell align="center">{totalData.r}</TableCell>
+              {/* <TableCell align="center">{totalData.r}</TableCell> */}
               <TableCell align="center">{totalData.s}</TableCell>
               <TableCell align="center"></TableCell>
             </TableRow>
@@ -180,10 +179,10 @@ export default function TableAll() {
           <TableHead>
             <TableRow>
               <StyledTableCell align="center">Day</StyledTableCell>
-              <StyledTableCell align="center">Placements</StyledTableCell>
-              <StyledTableCell align="center">Videos</StyledTableCell>
+              {/* <StyledTableCell align="center">Placements</StyledTableCell>
+              <StyledTableCell align="center">Videos</StyledTableCell> */}
               <StyledTableCell align="center">Hours</StyledTableCell>
-              <StyledTableCell align="center">R. Visits</StyledTableCell>
+              {/* <StyledTableCell align="center">R. Visits</StyledTableCell> */}
               <StyledTableCell align="center">Studies</StyledTableCell>
               <StyledTableCell align="center">Actions</StyledTableCell>
             </TableRow>
@@ -192,43 +191,43 @@ export default function TableAll() {
           {loading}
 
           <TableBody>
-            {data.map((item) => (
+            {Array.from(cData).map(([key, item]) => (
               <StyledTableRow
                 hover
                 role="checkbox"
                 tabIndex={-1}
-                key={item.key}
+                key={key}
               >
                 <StyledTableCell align="center">
                   {/*<Avatar className={classes.avatarList}>
-                                            {item.val().day}
+                                            {item.day}
                                         </Avatar>{" "}*/}
-                  {item.val().day}-{getDayName(item.val().date)}
+                  {item.day}-{getDayName(item.date)}
+                </StyledTableCell>
+                {/* <StyledTableCell align="center">
+                  {item.pubs}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {item.val().pubs}
-                </StyledTableCell>
+                  {item.vid}
+                </StyledTableCell> */}
                 <StyledTableCell align="center">
-                  {item.val().vid}
+                  {item.horas}
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  {item.val().horas}
-                </StyledTableCell>
-                <StyledTableCell align="center">
+                {/* <StyledTableCell align="center">
                   <Button
-                    id={"rr" + item.key}
+                    id={"rr" + key}
                     aria-describedby={"info"}
                     onClick={(e) => {
-                      handleClick2(e, "rv" + item.key);
+                      handleClick2(e, "rv" + key);
                     }}
                     //variant="outlined"
                     color="secondary"
                   >
-                    {item.val().rr}
+                    {item.rr}
                   </Button>
                   <Popover
                     id={"info2"}
-                    open={popContex.popId === "rv" + item.key}
+                    open={popContex.popId === "rv" + key}
                     anchorEl={popContex.anchorEl}
                     onClose={handleClose2}
                     anchorOrigin={{
@@ -240,21 +239,17 @@ export default function TableAll() {
                       horizontal: "center",
                     }}
                   >
-                    {/*<Typography className={classes.typography}>
-                      // The content of the Popover. // //
-                    </Typography>
-                    //<List>{generate(item.val().rvnames)}</List>*/}
                     <List>
-                      {item.val().rvnames.map((value) => (
+                      {item.rvnames.map((value) => (
                         <ListItem key={value.name}>
                           <ListItemText primary={value.name} />
                         </ListItem>
                       ))}
                     </List>
                   </Popover>
-                </StyledTableCell>
+                </StyledTableCell> */}
                 <StyledTableCell align="center">
-                  {item.val().est}
+                  {item.est}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <ButtonGroup
@@ -264,13 +259,13 @@ export default function TableAll() {
                   >
                     <Button
                       className={classes.smallpadding}
-                      onClick={updateDataForm(item.key)}
+                      onClick={updateDataForm(key)}
                     >
                       <EditOutlinedIcon />
                     </Button>
                     <Button
                       className={classes.smallpadding}
-                      onClick={delData(item.key)}
+                      onClick={delData(key)}
                     >
                       <DeleteOutlinedIcon />
                     </Button>
