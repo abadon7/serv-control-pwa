@@ -31,6 +31,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { makeStyles } from "@mui/styles";
 import dayjs from "dayjs";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -361,7 +362,16 @@ export default function AddDialog(props) {
           {"Add or update an activity record"}
         </DialogTitle>
         <DialogContent>
-          <form className={classes.root} noValidate autoComplete="off">
+          {/* <Box className={classes.root} noValidate autoComplete="off"> */}
+          <Box
+    component="form"
+    sx={{
+      '& .MuiTextField-root': { m: 1, width: '25ch' },
+      textAlign:"center",
+    }}
+    noValidate
+    autoComplete="on"
+    >
             <div>
               <TextField
                 id="date"
@@ -378,9 +388,10 @@ export default function AddDialog(props) {
                 InputProps={{
                   name: "date",
                 }}
+                variant="outlined"
               />
-            </div>
-            <div>
+           {/*  </div> */}
+            {/* <div>
               <TextField
                 id="placements"
                 label="Placements"
@@ -420,7 +431,7 @@ export default function AddDialog(props) {
                 }}
                 type="number"
               />
-            </div>
+            </div> */}
             {/* <div> */}
             {/*   <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
             {/*     <TimePicker */}
@@ -446,8 +457,10 @@ export default function AddDialog(props) {
                 clearable
                 onChange={handlenDateChange}
                 value={composeDate(dataRValues.horas)}
+                variant="outlined"
               />
             </LocalizationProvider>
+            </div>
             <div>
               <Autocomplete
                 id="return_v"
@@ -545,7 +558,7 @@ export default function AddDialog(props) {
                 <LocalLibraryOutlinedIcon />
               </Badge>
             </div>
-          </form>
+          </Box>
           <DialogContentText></DialogContentText>
         </DialogContent>
         <DialogActions>
