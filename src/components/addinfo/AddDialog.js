@@ -343,7 +343,7 @@ export default function AddDialog(props) {
 
   const composeDate = (date) => {
     const spliDate = date.split(":");
-    return new Date(new Date().setHours(spliDate[0], spliDate[1], 0, 0));
+    return dayjs(new Date(new Date().setHours(spliDate[0], spliDate[1], 0, 0)));
   };
 
   //const [returnvValue, setReturnvValue] = React.useState(rrDataNames);
